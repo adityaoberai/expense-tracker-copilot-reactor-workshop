@@ -8,19 +8,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
+    <div class="container">        <header>
             <h1>Expense Tracker</h1>
-            <div class="date-range">
-                <select id="timeframe">
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                </select>
-                <div class="date-picker">
-                    <input type="date" id="start-date">
-                    <span id="date-separator" style="display: none;"> - </span>
-                    <input type="date" id="end-date" style="display: none;">
+            <div class="header-controls">
+                <div class="dark-mode-toggle">
+                    <button id="dark-mode-toggle" aria-label="Toggle dark mode">
+                        <i class="fas fa-moon"></i>
+                        <span class="toggle-text">Dark Mode</span>
+                    </button>
+                </div>
+                <div class="date-range">
+                    <select id="timeframe">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                    <div class="date-picker">
+                        <input type="date" id="start-date">
+                        <span id="date-separator" style="display: none;"> - </span>
+                        <input type="date" id="end-date" style="display: none;">
+                    </div>
                 </div>
             </div>
         </header>

@@ -20,11 +20,35 @@ async function initApp() {
   document.getElementById('expense-date').value = today;
   document.getElementById('start-date').value = today;
 
+  // Initialize dark mode from saved preference
+  initDarkMode();
+
   // Initially load daily view for today
   await loadExpenses();
 
   // Initialize chart
   initChart();
+}
+
+/**
+ * Initialize dark mode based on saved preferences or system preference
+ */
+function initDarkMode() {
+  // Check for saved theme preference
+  const savedTheme = localStorage.getItem('theme');
+  
+  // If no saved preference, check system preference
+  if (!savedTheme) {
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDarkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      updateDarkModeToggleText('dark');
+    }
+  } else {
+    // Apply saved preference
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateDarkModeToggleText(savedTheme);
+  }
 }
 
 /**
@@ -39,6 +63,9 @@ function setupEventListeners() {
 
   // Delete button in modal
   document.getElementById('delete-expense').addEventListener('click', handleDeleteExpense);
+
+  // Dark mode toggle
+  document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
 
   // Close modal button
   document.querySelector('.close').addEventListener('click', () => {
@@ -447,6 +474,13 @@ let expenseChart;
 function initChart() {
   const ctx = document.getElementById('expense-chart').getContext('2d');
   
+  // Determine if we're in dark mode
+  const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+  
+  // Set grid and text colors based on theme
+  const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  const textColor = isDarkMode ? '#e0e0e0' : '#666';
+  
   expenseChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -465,8 +499,20 @@ function initChart() {
       scales: {
         y: {
           beginAtZero: true,
+          grid: {
+            color: gridColor
+          },
           ticks: {
-            callback: (value) => `₹${value}`
+            callback: (value) => `₹${value}`,
+            color: textColor
+          }
+        },
+        x: {
+          grid: {
+            color: gridColor
+          },
+          ticks: {
+            color: textColor
           }
         }
       },
@@ -637,4 +683,74 @@ function showNotification(message, type) {
  */
 function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Toggle between light and dark themes
+ */
+function toggleDarkMode() {
+  // Add a transition class
+  document.body.classList.add('theme-transition');
+  
+  // Get current theme
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  
+  // Toggle theme
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  
+  // Save preference to localStorage
+  localStorage.setItem('theme', newTheme);
+  
+  // Update toggle button text
+  updateDarkModeToggleText(newTheme);
+  
+  // Update chart for dark mode
+  updateChartForTheme(newTheme);
+  
+  // Remove transition class after animation completes
+  setTimeout(() => {
+    document.body.classList.remove('theme-transition');
+  }, 500);
+}
+
+/**
+ * Update the dark mode toggle button text based on theme
+ * @param {string} theme - The current theme ('dark' or 'light')
+ */
+function updateDarkModeToggleText(theme) {
+  const toggleButton = document.getElementById('dark-mode-toggle');
+  const toggleText = toggleButton.querySelector('.toggle-text');
+  
+  if (theme === 'dark') {
+    toggleText.textContent = 'Light Mode';
+    toggleButton.querySelector('i').classList.remove('fa-moon');
+    toggleButton.querySelector('i').classList.add('fa-sun');
+  } else {
+    toggleText.textContent = 'Dark Mode';
+    toggleButton.querySelector('i').classList.remove('fa-sun');
+    toggleButton.querySelector('i').classList.add('fa-moon');
+  }
+}
+
+/**
+ * Update chart appearance based on theme
+ * @param {string} theme - The current theme ('dark' or 'light')
+ */
+function updateChartForTheme(theme) {
+  if (!expenseChart) return;
+  
+  if (theme === 'dark') {
+    expenseChart.options.scales.x.grid.color = 'rgba(255, 255, 255, 0.1)';
+    expenseChart.options.scales.y.grid.color = 'rgba(255, 255, 255, 0.1)';
+    expenseChart.options.scales.x.ticks.color = '#e0e0e0';
+    expenseChart.options.scales.y.ticks.color = '#e0e0e0';
+  } else {
+    expenseChart.options.scales.x.grid.color = 'rgba(0, 0, 0, 0.1)';
+    expenseChart.options.scales.y.grid.color = 'rgba(0, 0, 0, 0.1)';
+    expenseChart.options.scales.x.ticks.color = '#666';
+    expenseChart.options.scales.y.ticks.color = '#666';
+  }
+  
+  expenseChart.update();
 }
