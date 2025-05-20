@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Expense Tracker</h1>
+            <div class="date-range">
+                <select id="timeframe">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+                <div class="date-picker">
+                    <input type="date" id="start-date">
+                    <span id="date-separator" style="display: none;"> - </span>
+                    <input type="date" id="end-date" style="display: none;">
+                </div>
+            </div>
+        </header>
+
+        <div class="summary">
+            <div class="total">
+                <h2>Total Expenses</h2>
+                <h3 id="total-amount">₹0.00</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="expense-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="add-expense">
+            <h2>Add Expense</h2>
+            <form id="expense-form">
+                <div class="form-group">
+                    <label for="expense-name">Description</label>
+                    <input type="text" id="expense-name" placeholder="What did you spend on?" required>
+                </div>
+                <div class="form-group">
+                    <label for="expense-amount">Amount</label>
+                    <input type="number" id="expense-amount" placeholder="0.00" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="expense-category">Category</label>
+                    <select id="expense-category" required>
+                        <option value="">Select a category</option>
+                        <option value="food">Food</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="health">Health</option>
+                        <option value="housing">Housing</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="expense-date">Date</label>
+                    <input type="date" id="expense-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="expense-notes">Notes (optional)</label>
+                    <textarea id="expense-notes" placeholder="Add any additional details"></textarea>
+                </div>
+                <button type="submit" class="btn add-btn">Add Expense</button>
+            </form>
+        </div>
+
+        <div class="expenses-container">
+            <h2>Expense History</h2>
+            <div class="filter-options">
+                <select id="category-filter">
+                    <option value="all">All Categories</option>
+                    <option value="food">Food</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="health">Health</option>
+                    <option value="housing">Housing</option>
+                    <option value="other">Other</option>
+                </select>
+                <div class="sort-options">
+                    <label for="sort-by">Sort by:</label>
+                    <select id="sort-by">
+                        <option value="date-desc">Date (Newest)</option>
+                        <option value="date-asc">Date (Oldest)</option>
+                        <option value="amount-desc">Amount (Highest)</option>
+                        <option value="amount-asc">Amount (Lowest)</option>
+                    </select>
+                </div>
+            </div>
+            <ul id="expense-list">
+                <!-- Expenses will be added dynamically here -->
+                <li class="no-expenses">No expenses to show</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal for editing expenses -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Expense</h2>
+            <form id="edit-expense-form">
+                <input type="hidden" id="edit-expense-id">
+                <div class="form-group">
+                    <label for="edit-expense-name">Description</label>
+                    <input type="text" id="edit-expense-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-expense-amount">Amount</label>
+                    <input type="number" id="edit-expense-amount" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-expense-category">Category</label>
+                    <select id="edit-expense-category" required>
+                        <option value="food">Food</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="health">Health</option>
+                        <option value="housing">Housing</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-expense-date">Date</label>
+                    <input type="date" id="edit-expense-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-expense-notes">Notes (optional)</label>
+                    <textarea id="edit-expense-notes"></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn save-btn">Save Changes</button>
+                    <button type="button" class="btn delete-btn" id="delete-expense">Delete Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
