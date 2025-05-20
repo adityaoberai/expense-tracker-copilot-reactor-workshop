@@ -323,25 +323,62 @@ function displayExpenses(expenses) {
     listItem.className = 'expense-item';
     listItem.dataset.id = expense.id;
     
-    // Format date
+  // Format date
     const date = new Date(expense.date);
-    const formattedDate = date.toLocaleDateString();
+    const formattedDate = date.toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+    
+    // Get category icon
+    const categoryIcons = {
+      food: 'fa-utensils',
+      transportation: 'fa-car',
+      utilities: 'fa-bolt',
+      entertainment: 'fa-film',
+      shopping: 'fa-shopping-bag',
+      health: 'fa-heart',
+      housing: 'fa-home',
+      other: 'fa-receipt'
+    };
+
+    // Determine amount class based on value
+    const determineAmountClass = (amount) => {
+      if (amount >= 1000) return 'high';
+      if (amount >= 500) return 'medium';
+      return 'low';
+    };
+
+    // Calculate the relative width for the progress bar (max 100%)
+    const maxAmount = Math.max(...expenses.map(e => e.amount));
+    const progressWidth = (expense.amount / maxAmount) * 100;
     
     listItem.innerHTML = `
       <div class="expense-details">
-        <div class="expense-name">${expense.name}</div>
+        <div class="expense-name">
+          <span class="category-icon category-${expense.category}">
+            <i class="fas ${categoryIcons[expense.category]}"></i>
+          </span>
+          ${expense.name}
+        </div>
         <div class="expense-meta">
           <span class="category-badge ${expense.category}">${capitalizeFirstLetter(expense.category)}</span>
-          <span class="expense-date">${formattedDate}</span>
+          <span class="expense-date">
+            <i class="far fa-calendar-alt"></i>
+            ${formattedDate}
+          </span>
         </div>
         ${expense.notes ? `<div class="expense-notes">${expense.notes}</div>` : ''}
       </div>
-      <div class="expense-amount">₹${expense.amount.toFixed(2)}</div>
+      <div class="expense-amount ${determineAmountClass(expense.amount)}">₹${expense.amount.toFixed(2)}</div>
       <div class="expense-actions">
         <button class="edit-btn" data-id="${expense.id}">
           <i class="fas fa-edit"></i>
         </button>
       </div>
+      <div class="expense-progress" style="width: ${progressWidth}%"></div>
     `;
     
     // Add edit event listener
